@@ -134,8 +134,7 @@ class _RegisterPageState extends State<RegisterPage> {
       textfield: GestureDetector(
         onTap: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
-            allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
-            type: FileType.custom
+            type: FileType.image
           );
 
           if (result != null) {
