@@ -11,6 +11,7 @@ class CustomTextfieldWidget extends StatelessWidget {
     this.onSuffixTap,
     this.isEnabled = true,
     this.textInputType = TextInputType.text,
+    this.maxLines = 1,
     super.key,
   });
   final TextEditingController controller;
@@ -20,6 +21,7 @@ class CustomTextfieldWidget extends StatelessWidget {
   final VoidCallback? onSuffixTap;
   final bool isEnabled;
   final TextInputType textInputType;
+  final int maxLines;
 
 
   @override
@@ -30,6 +32,7 @@ class CustomTextfieldWidget extends StatelessWidget {
       obscureText: isObscure,
       enabled: isEnabled,
       keyboardType: textInputType,
+      maxLines: maxLines,
       style: TextStyle(
         fontWeight: FontWeight.w500,
         fontSize: 16.sp,
