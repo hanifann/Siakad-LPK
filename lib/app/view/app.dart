@@ -23,12 +23,11 @@ class App extends StatelessWidget {
               systemOverlayStyle: SystemUiOverlayStyle(
                 statusBarBrightness: Brightness.light,
                 statusBarIconBrightness: Brightness.dark,
-                statusBarColor: Colors.white,
               ),
               iconTheme: IconThemeData(
                 color: kPrimaryTextColor
               ),
-              backgroundColor: Colors.white,              
+              backgroundColor: Color.fromRGBO(208, 208, 208, 1),              
             ),
           ),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
