@@ -21,7 +21,7 @@ dependencies:
   go_router: ^10.0.0
   internet_connection_checker: ^1.0.0+1
   shared_preferences: ^2.1.2
-  intl: ^0.17.0
+  intl: ^0.18.0
 
 dev_dependencies:
   bloc_test: ^9.1.1
@@ -36,6 +36,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - assets/images/
   fonts:
     - family: Nunito
       fonts:
