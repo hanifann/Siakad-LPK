@@ -6,11 +6,13 @@ class ColumnTitleAndTextFieldWidget extends StatelessWidget {
   const ColumnTitleAndTextFieldWidget({
     required this.textfield, 
     required this.title,
+    this.size = 16,
     super.key,
   });
 
   final Widget textfield;
   final String title;
+  final int size;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class ColumnTitleAndTextFieldWidget extends StatelessWidget {
         CustomTextWidget(
           text: title,
           weight: FontWeight.bold,
-          size: 16.sp,
+          size: size.sp,
         ),
         textfield
       ],
