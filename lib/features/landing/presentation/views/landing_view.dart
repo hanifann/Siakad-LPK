@@ -2,6 +2,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:siakad_lpk/themes/colors.dart';
 import 'package:siakad_lpk/widgets/text_widget.dart';
 
@@ -30,7 +31,7 @@ class LandingPage extends StatelessWidget {
             SizedBox(height: 4.h,),
             registrationStepContainerWidget(),
             SizedBox(height: 8.h,),
-            loginBtnWidget(),
+            loginBtnWidget(context),
             registerTextWidget(),
           ],
         ),
@@ -70,12 +71,12 @@ class LandingPage extends StatelessWidget {
     );
   }
 
-  SizedBox loginBtnWidget() {
+  SizedBox loginBtnWidget(BuildContext context) {
     return SizedBox(
       width: 1.sw,
       child: ElevatedButton(
         onPressed: () {
-          
+          context.push('/login');
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: kPrimaryColor
