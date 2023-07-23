@@ -53,7 +53,7 @@ class CustomTextfieldWidget extends StatelessWidget {
         ),
         disabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.grey,
+            color: kPrimaryTextColor,
           ),
         ),
         focusedBorder: const OutlineInputBorder(
