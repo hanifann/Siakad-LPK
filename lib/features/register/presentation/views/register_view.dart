@@ -1,9 +1,18 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/column_title_and_textfield_widget.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/custom_textfield_widget.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/custom_dropdown_btn_widget.dart';
+import 'package:siakad_lpk/features/register/presentation/widgets/next_btn_widget.dart';
+import 'package:siakad_lpk/features/register/presentation/widgets/previous_btn_widget.dart';
+import 'package:siakad_lpk/themes/colors.dart';
 import 'package:siakad_lpk/widgets/text_widget.dart';
 
 class RegisterView extends StatelessWidget {
@@ -32,7 +41,15 @@ class _RegisterPageState extends State<RegisterPage> {
   final experienceEditingController = TextEditingController();
   final phoneEditingController = TextEditingController();
   final idEditingController = TextEditingController();
+  final emailEditingController = TextEditingController();
+  final passwordEditingController = TextEditingController();
+
+  final pageViewController = PageController();
+
   DateTime date = DateTime.now();
+  int pages = 0;
+  bool isObscure = true;
+  String? path;
 
   List<String> marriageStatusLists = [
     'Belum kawin',
@@ -64,6 +81,9 @@ class _RegisterPageState extends State<RegisterPage> {
     experienceEditingController.dispose();
     phoneEditingController.dispose();
     idEditingController.dispose();
+    emailEditingController.dispose();
+    passwordEditingController.dispose();
+    pageViewController.dispose();
     super.dispose();
   }
 
@@ -76,8 +96,256 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           titleWidget(),
           SizedBox(height: 16.h,),
-          pageOneColumnWidget()
+          SizedBox(
+            width: 1.sw,
+            height: 1.sh * 0.84,
+            child: PageView(
+              controller: pageViewController,
+              children: [
+                pageOneColumnWidget(),
+                pageTwoColumnWidget(),
+                pageThreeColumnWidget()
+              ],
+            ),
+          ),
+          SizedBox(height: 4.h,),
+          navigationRowBtnWidget(),
+          SizedBox(height: 14.h,),
+          loginTextWidget(context)
         ],
+      ),
+    );
+  }
+
+  Column pageThreeColumnWidget() {
+    return Column(
+      children: [
+        emailTextFieldWidget(),
+        SizedBox(height: 12.h,),
+        passwordTextFieldWidget(),
+        SizedBox(height: 12.h,),
+        filePickerTextFieldWidget()
+      ],
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget filePickerTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: GestureDetector(
+        onTap: () async {
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+            type: FileType.custom
+          );
+
+          if (result != null) {
+            File file = File(result.files.single.path!);
+            setState(() {
+              path = file.path;
+            });
+          } else {
+            log('$result is empty');
+          }
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 56.h, horizontal: 8.w),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: CustomTextWidget(
+                  text: path == null ? 'Pilih file' : path!,
+                  size: 16.sp,
+                  weight: FontWeight.w500,
+                ),
+              ),
+              Icon(
+                Icons.description,
+                size: 36.r,
+              )
+            ],
+          ),
+        ),
+      ),
+      title: 'Upload bukti pembayaran',
+      isWithAsterisk: true,
+      condition: 'Pastikan bukti pembayaran merupakan pembayaran pendaftaran.',
+      size: 15,
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget passwordTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomTextfieldWidget(
+        controller: passwordEditingController, 
+        hint: '',
+        isObscure: isObscure,
+        onSuffixTap: () {
+          setState(() {
+            isObscure = !isObscure;
+          });
+        },
+        suffixIcon: isObscure ? Icons.visibility_off : Icons.visibility,
+      ), 
+      title: 'Password',
+      size: 15,
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget emailTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomTextfieldWidget(
+        controller: emailEditingController, 
+        hint: '',
+        textInputType: TextInputType.emailAddress,
+      ), 
+      title: 'Email',
+      size: 15,
+    );
+  }
+
+  Column pageTwoColumnWidget() {
+    return Column(
+      children: [
+        parentTextFieldWidget(),
+        SizedBox(height: 12.h,),
+        addressTextFieldWidget(),
+        SizedBox(height: 12.h,),
+        expTextFieldWidget(),
+        SizedBox(height: 12.h,),
+        phoneTextFieldWidget(),
+        SizedBox(height: 12.h,),
+        idTextFieldWidget(),
+      ],
+    );
+  }
+
+  Row navigationRowBtnWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Visibility(
+          visible: pages == 0 ? false : true,
+          child: PreviousBtnWidget(
+            onPressed:() {
+              setState(() {
+              pages--;
+            });
+              pageViewController.previousPage(
+                duration: const Duration(milliseconds: 300), 
+                curve: Curves.ease
+              );
+            },
+          ),
+        ),
+        NextBtnWidget(
+          onPressed: () {
+            setState(() {
+              pages++;
+            });
+            pageViewController.nextPage(
+              duration: const Duration(milliseconds: 300), 
+              curve: Curves.ease
+            );
+          },
+        )
+      ],
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget idTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomTextfieldWidget(
+        controller: idEditingController, 
+        hint: ''
+      ), 
+      title: 'No. KTP',
+      size: 15,
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget phoneTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomTextfieldWidget(
+        controller: phoneEditingController, 
+        hint: '',
+        textInputType: TextInputType.number,
+      ), 
+      title: 'No. Telephone',
+      isWithAsterisk: true,
+      condition: 'Pastikan no. telepon terhubung ke WhatsApp' 
+      ' karena digunakan untuk info aktivasi akun',
+      size: 15,
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget expTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomTextfieldWidget(
+        controller: experienceEditingController, 
+        hint: '',
+        maxLines: 5,
+      ), 
+      title: 'Pengalaman kerja',
+      size: 15,
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget addressTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomTextfieldWidget(
+        controller: addressEditingController, 
+        hint: '',
+        maxLines: 5,
+      ), 
+      title: 'Alamat Lengkap',
+      size: 15,
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget parentTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomTextfieldWidget(
+        controller: parentEditingController, 
+        hint: ''
+      ), 
+      title: 'Nama Orang Tua',
+      size: 15,
+    );
+  }
+
+  Center loginTextWidget(BuildContext context) {
+    return Center(
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: kPrimaryTextColor
+          ),
+          children: [
+            const TextSpan(
+              text: 'Sudah punya akun? ',
+              style: TextStyle(
+                fontWeight: FontWeight.w500
+              )
+            ),
+            TextSpan(
+              text: 'Masuk',
+              style: const TextStyle(
+                color: kPrimaryColor,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+              recognizer: TapGestureRecognizer()..onTap= (){
+                context.pushReplacement('/login');
+              }
+            ),
+          ]
+        )
       ),
     );
   }
