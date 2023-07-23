@@ -2,6 +2,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/column_title_and_textfield_widget.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/custom_textfield_widget.dart';
 import 'package:siakad_lpk/themes/colors.dart';
@@ -54,14 +55,14 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 24.h,),
             loginBtnWidget(),
             SizedBox(height: 8.h,),
-            registerTextWidget()
+            registerTextWidget(context)
           ],
         ),
       ),
     );
   }
 
-  Center registerTextWidget() {
+  Center registerTextWidget(BuildContext context) {
     return Center(
       child: RichText(
         text: TextSpan(
@@ -84,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: TextDecoration.underline,
               ),
               recognizer: TapGestureRecognizer()..onTap= (){
-    
+                context.push('/register');
               }
             ),
           ]

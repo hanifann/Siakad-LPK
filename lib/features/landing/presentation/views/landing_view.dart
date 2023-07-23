@@ -32,14 +32,14 @@ class LandingPage extends StatelessWidget {
             registrationStepContainerWidget(),
             SizedBox(height: 8.h,),
             loginBtnWidget(context),
-            registerTextWidget(),
+            registerTextWidget(context),
           ],
         ),
       ),
     );
   }
 
-  Center registerTextWidget() {
+  Center registerTextWidget(BuildContext context) {
     return Center(
       child: RichText(
         text: TextSpan(
@@ -62,7 +62,7 @@ class LandingPage extends StatelessWidget {
                 decoration: TextDecoration.underline,
               ),
               recognizer: TapGestureRecognizer()..onTap= (){
-    
+                context.push('/register');
               }
             ),
           ]
