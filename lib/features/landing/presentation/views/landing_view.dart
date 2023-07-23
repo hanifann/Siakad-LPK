@@ -62,7 +62,7 @@ class LandingPage extends StatelessWidget {
                 decoration: TextDecoration.underline,
               ),
               recognizer: TapGestureRecognizer()..onTap= (){
-                context.push('/register');
+                context.pushReplacement('/register');
               }
             ),
           ]
@@ -76,7 +76,7 @@ class LandingPage extends StatelessWidget {
       width: 1.sw,
       child: ElevatedButton(
         onPressed: () {
-          context.push('/login');
+          context.pushReplacement('/login');
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: kPrimaryColor

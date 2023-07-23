@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: TextDecoration.underline,
               ),
               recognizer: TapGestureRecognizer()..onTap= (){
-                context.push('/register');
+                context.pushReplacement('/register');
               }
             ),
           ]
