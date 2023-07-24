@@ -4,14 +4,17 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/column_title_and_textfield_widget.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/custom_textfield_widget.dart';
+import 'package:siakad_lpk/features/register/presentation/bloc/register_bloc.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/custom_dropdown_btn_widget.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/next_btn_widget.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/previous_btn_widget.dart';
+import 'package:siakad_lpk/injection_container.dart';
 import 'package:siakad_lpk/themes/colors.dart';
 import 'package:siakad_lpk/widgets/text_widget.dart';
 
@@ -20,7 +23,10 @@ class RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const RegisterPage();
+    return BlocProvider(
+      create: (context) => sl<RegisterBloc>(),
+      child: const RegisterPage(),
+    );
   }
 }
 
@@ -50,6 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
   int pages = 0;
   bool isObscure = true;
   String? path;
+  String? photoPath;
 
   List<String> marriageStatusLists = [
     'Belum kawin',
@@ -95,7 +102,9 @@ class _RegisterPageState extends State<RegisterPage> {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         children: [
           titleWidget(),
-          SizedBox(height: 16.h,),
+          SizedBox(
+            height: 16.h,
+          ),
           SizedBox(
             width: 1.sw,
             height: 1.sh * 0.84,
@@ -108,9 +117,13 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
             ),
           ),
-          SizedBox(height: 4.h,),
+          SizedBox(
+            height: 4.h,
+          ),
           navigationRowBtnWidget(),
-          SizedBox(height: 14.h,),
+          SizedBox(
+            height: 14.h,
+          ),
           loginTextWidget(context)
         ],
       ),
@@ -121,11 +134,65 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       children: [
         emailTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         passwordTextFieldWidget(),
-        SizedBox(height: 12.h,),
-        filePickerTextFieldWidget()
+        SizedBox(
+          height: 12.h,
+        ),
+        filePickerTextFieldWidget(),
+        SizedBox(
+          height: 12.h,
+        ),
+        profilePhotoTextFieldWidget()
       ],
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget profilePhotoTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: GestureDetector(
+        onTap: () async {
+          FilePickerResult? result =
+              await FilePicker.platform.pickFiles(type: FileType.image);
+
+          if (result != null) {
+            File file = File(result.files.single.path!);
+            setState(() {
+              photoPath = file.path;
+            });
+          } else {
+            log('$result is empty');
+          }
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 56.h, horizontal: 8.w),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: photoPath == null ? 0 : 1,
+                child: CustomTextWidget(
+                  text: photoPath == null ? 'Pilih file' : photoPath!,
+                  size: 16.sp,
+                  weight: FontWeight.w500,
+                ),
+              ),
+              Icon(
+                Icons.description,
+                size: 36.r,
+              )
+            ],
+          ),
+        ),
+      ),
+      title: 'Upload photo',
+      size: 15,
     );
   }
 
@@ -133,9 +200,8 @@ class _RegisterPageState extends State<RegisterPage> {
     return ColumnTitleAndTextFieldWidget(
       textfield: GestureDetector(
         onTap: () async {
-          FilePickerResult? result = await FilePicker.platform.pickFiles(
-            type: FileType.image
-          );
+          FilePickerResult? result =
+              await FilePicker.platform.pickFiles(type: FileType.image);
 
           if (result != null) {
             File file = File(result.files.single.path!);
@@ -180,7 +246,7 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget passwordTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomTextfieldWidget(
-        controller: passwordEditingController, 
+        controller: passwordEditingController,
         hint: '',
         isObscure: isObscure,
         onSuffixTap: () {
@@ -189,7 +255,7 @@ class _RegisterPageState extends State<RegisterPage> {
           });
         },
         suffixIcon: isObscure ? Icons.visibility_off : Icons.visibility,
-      ), 
+      ),
       title: 'Password',
       size: 15,
     );
@@ -198,10 +264,10 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget emailTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomTextfieldWidget(
-        controller: emailEditingController, 
+        controller: emailEditingController,
         hint: '',
         textInputType: TextInputType.emailAddress,
-      ), 
+      ),
       title: 'Email',
       size: 15,
     );
@@ -211,13 +277,21 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       children: [
         parentTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         addressTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         expTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         phoneTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         idTextFieldWidget(),
       ],
     );
@@ -230,14 +304,13 @@ class _RegisterPageState extends State<RegisterPage> {
         Visibility(
           visible: pages == 0 ? false : true,
           child: PreviousBtnWidget(
-            onPressed:() {
+            onPressed: () {
               setState(() {
-              pages--;
-            });
+                pages--;
+              });
               pageViewController.previousPage(
-                duration: const Duration(milliseconds: 300), 
-                curve: Curves.ease
-              );
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.ease);
             },
           ),
         ),
@@ -247,9 +320,8 @@ class _RegisterPageState extends State<RegisterPage> {
               pages++;
             });
             pageViewController.nextPage(
-              duration: const Duration(milliseconds: 300), 
-              curve: Curves.ease
-            );
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.ease);
           },
         )
       ],
@@ -258,10 +330,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   ColumnTitleAndTextFieldWidget idTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
-      textfield: CustomTextfieldWidget(
-        controller: idEditingController, 
-        hint: ''
-      ), 
+      textfield:
+          CustomTextfieldWidget(controller: idEditingController, hint: ''),
       title: 'No. KTP',
       size: 15,
     );
@@ -270,14 +340,14 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget phoneTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomTextfieldWidget(
-        controller: phoneEditingController, 
+        controller: phoneEditingController,
         hint: '',
         textInputType: TextInputType.number,
-      ), 
+      ),
       title: 'No. Telephone',
       isWithAsterisk: true,
-      condition: 'Pastikan no. telepon terhubung ke WhatsApp' 
-      ' karena digunakan untuk info aktivasi akun',
+      condition: 'Pastikan no. telepon terhubung ke WhatsApp'
+          ' karena digunakan untuk info aktivasi akun',
       size: 15,
     );
   }
@@ -285,10 +355,10 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget expTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomTextfieldWidget(
-        controller: experienceEditingController, 
+        controller: experienceEditingController,
         hint: '',
         maxLines: 5,
-      ), 
+      ),
       title: 'Pengalaman kerja',
       size: 15,
     );
@@ -297,10 +367,10 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget addressTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomTextfieldWidget(
-        controller: addressEditingController, 
+        controller: addressEditingController,
         hint: '',
         maxLines: 5,
-      ), 
+      ),
       title: 'Alamat Lengkap',
       size: 15,
     );
@@ -308,10 +378,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   ColumnTitleAndTextFieldWidget parentTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
-      textfield: CustomTextfieldWidget(
-        controller: parentEditingController, 
-        hint: ''
-      ), 
+      textfield:
+          CustomTextfieldWidget(controller: parentEditingController, hint: ''),
       title: 'Nama Orang Tua',
       size: 15,
     );
@@ -320,32 +388,24 @@ class _RegisterPageState extends State<RegisterPage> {
   Center loginTextWidget(BuildContext context) {
     return Center(
       child: RichText(
-        text: TextSpan(
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: kPrimaryTextColor
-          ),
-          children: [
+          text: TextSpan(
+              style: TextStyle(fontSize: 14.sp, color: kPrimaryTextColor),
+              children: [
             const TextSpan(
-              text: 'Sudah punya akun? ',
-              style: TextStyle(
-                fontWeight: FontWeight.w500
-              )
-            ),
+                text: 'Sudah punya akun? ',
+                style: TextStyle(fontWeight: FontWeight.w500)),
             TextSpan(
-              text: 'Masuk',
-              style: const TextStyle(
-                color: kPrimaryColor,
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-              ),
-              recognizer: TapGestureRecognizer()..onTap= (){
-                context.pushReplacement('/login');
-              }
-            ),
-          ]
-        )
-      ),
+                text: 'Masuk',
+                style: const TextStyle(
+                  color: kPrimaryColor,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    context.pushReplacement('/login');
+                  }),
+          ])),
     );
   }
 
@@ -353,15 +413,25 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       children: [
         fullNameTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         pobTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         dobTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         lastEduTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         marriageTextFieldWidget(),
-        SizedBox(height: 12.h,),
+        SizedBox(
+          height: 12.h,
+        ),
         religionTextFieldWidget()
       ],
     );
@@ -370,12 +440,14 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget religionTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomDropdownBtnWidget(
-        items: religionList.map<DropdownMenuItem<String>>(
-          (e) => DropdownMenuItem(
-            value: e,
-            child: Text(e),
-          ),
-        ).toList(),
+        items: religionList
+            .map<DropdownMenuItem<String>>(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e),
+              ),
+            )
+            .toList(),
         onChange: (value) {
           setState(() {
             religion = value!;
@@ -390,12 +462,14 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget marriageTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomDropdownBtnWidget(
-        items: marriageStatusLists.map<DropdownMenuItem<String>>(
-          (e) => DropdownMenuItem(
-            value: e,
-            child: Text(e),
-          ),
-        ).toList(),
+        items: marriageStatusLists
+            .map<DropdownMenuItem<String>>(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e),
+              ),
+            )
+            .toList(),
         onChange: (value) {
           setState(() {
             marriageStatus = value!;
@@ -409,10 +483,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   ColumnTitleAndTextFieldWidget lastEduTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
-      textfield: CustomTextfieldWidget(
-        controller: lastEduEditingController, 
-        hint: ''
-      ), 
+      textfield:
+          CustomTextfieldWidget(controller: lastEduEditingController, hint: ''),
       title: 'Pendidikan terakhir',
       size: 15,
     );
@@ -420,10 +492,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   ColumnTitleAndTextFieldWidget pobTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
-      textfield: CustomTextfieldWidget(
-        controller: pobEditingController, 
-        hint: ''
-      ), 
+      textfield:
+          CustomTextfieldWidget(controller: pobEditingController, hint: ''),
       title: 'Tempat lahir',
       size: 15,
     );
@@ -432,24 +502,24 @@ class _RegisterPageState extends State<RegisterPage> {
   GestureDetector dobTextFieldWidget() {
     return GestureDetector(
       onTap: () => showDatePicker(
-        context: context, 
-        firstDate: DateTime(1900), 
-        lastDate: DateTime(2100),
-        initialDate: DateTime.now(),
-        locale: const Locale('id', 'ID')
-      ).then((value) {
+              context: context,
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+              initialDate: DateTime.now(),
+              locale: const Locale('id', 'ID'))
+          .then((value) {
         setState(() {
           date = value ?? date;
-          dobEditingController.text = DateFormat('MM/dd/yyyy', 'id')
-            .format(date);
+          dobEditingController.text =
+              DateFormat('MM/dd/yyyy', 'id').format(date);
         });
       }),
       child: ColumnTitleAndTextFieldWidget(
         textfield: CustomTextfieldWidget(
-          controller: dobEditingController, 
+          controller: dobEditingController,
           hint: '',
           isEnabled: false,
-        ), 
+        ),
         title: 'Tempat lahir',
         size: 15,
       ),
@@ -459,9 +529,7 @@ class _RegisterPageState extends State<RegisterPage> {
   ColumnTitleAndTextFieldWidget fullNameTextFieldWidget() {
     return ColumnTitleAndTextFieldWidget(
       textfield: CustomTextfieldWidget(
-        controller: fullNameEditingController, 
-        hint: ''
-      ), 
+          controller: fullNameEditingController, hint: ''),
       title: 'Nama lengkap',
       size: 15,
     );
@@ -484,7 +552,9 @@ class _RegisterPageState extends State<RegisterPage> {
       centerTitle: false,
       leading: Row(
         children: [
-          SizedBox(width: 8.w,),
+          SizedBox(
+            width: 8.w,
+          ),
           Image.asset('assets/images/logo.png')
         ],
       ),
