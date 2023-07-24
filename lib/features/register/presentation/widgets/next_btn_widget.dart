@@ -5,10 +5,11 @@ import 'package:siakad_lpk/widgets/text_widget.dart';
 
 class NextBtnWidget extends StatelessWidget {
   const NextBtnWidget({
-    super.key, required this.onPressed,
+    super.key, required this.onPressed, required this.text,
   });
 
   final VoidCallback onPressed;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +21,15 @@ class NextBtnWidget extends StatelessWidget {
       child: Row(
         children: [
           CustomTextWidget(
-            text: 'Selanjutnya',
+            text: text,
             color: Colors.white,
             size: 14.sp,
           ),
-          const Icon(
-            Icons.navigate_next
+          Visibility(
+            visible: text == 'Selanjutnya' ? true : false,
+            child: const Icon(
+              Icons.navigate_next
+            ),
           )
         ],
       )
