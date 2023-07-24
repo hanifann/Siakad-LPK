@@ -137,7 +137,7 @@ class ProfilePage extends StatelessWidget {
   AppBar appbarWidget() {
     return AppBar(
       centerTitle: false,
-      elevation: 1,
+      elevation: 0,
       title: CustomTextWidget(
         text: 'Profile',
         weight: FontWeight.bold,
