@@ -8,10 +8,12 @@ import 'package:siakad_lpk/features/login/data/datasources/login_local_datasourc
 import 'package:siakad_lpk/features/login/data/datasources/login_remote_datasource.dart';
 import 'package:siakad_lpk/features/login/data/repositories/login_repository_impl.dart';
 import 'package:siakad_lpk/features/login/domain/repositories/login_repositort.dart';
+import 'package:siakad_lpk/features/login/domain/usecases/get_local_user_usecase.dart';
 import 'package:siakad_lpk/features/login/domain/usecases/get_user_usecase.dart';
 import 'package:siakad_lpk/features/login/domain/usecases/post_login_usecase.dart';
 import 'package:siakad_lpk/features/login/presentation/bloc/login_bloc.dart';
 import 'package:siakad_lpk/features/login/presentation/bloc/user_bloc.dart';
+import 'package:siakad_lpk/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:siakad_lpk/features/register/data/datasources/register_remote_datasources.dart';
 import 'package:siakad_lpk/features/register/data/repositories/register_repository_impl.dart';
 import 'package:siakad_lpk/features/register/domain/repositories/register_repository.dart';
@@ -44,6 +46,7 @@ Future<void> init() async {
   //usecases
   sl.registerLazySingleton(() => PostLoginUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetUserUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetLocalUserUseCase(repository: sl()));
   //repositories
   sl.registerLazySingleton<LoginRepository>(() => LoginRepositoryImpl(
     networkInfo: sl(), 
@@ -62,6 +65,10 @@ Future<void> init() async {
   //auth
   //cubit
   sl.registerFactory(() => AuthCubit(sl(), sl()));
+
+  //profile
+  //bloc
+  sl.registerFactory(() => ProfileBloc(sl(), sl()));
 
 
   //!core
