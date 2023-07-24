@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:http/http.dart';
 import 'package:siakad_lpk/core/error/exception.dart';
 import 'package:siakad_lpk/core/error/model/error_model.dart';
@@ -44,9 +41,6 @@ class RegisterRemoteDataSourceImpl implements RegisterRemoteDataSource {
     request.headers['Accept'] = 'application/json';
 
     final response = await request.send();
-    var responseData = await response.stream.toBytes();
-   var responseString = String.fromCharCodes(responseData);
-   log(responseString);
     if(response.statusCode == 200){
       return 'Success';
     } else {
