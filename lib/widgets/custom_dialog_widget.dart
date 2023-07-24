@@ -39,6 +39,42 @@ class ErrorDialog extends StatelessWidget {
   }
 }
 
+class CustomDialog extends StatelessWidget {
+  const CustomDialog({required this.value, super.key, required this.title, });
+
+  final String value;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18.sp,
+        ),
+      ),
+      titlePadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+      contentPadding: EdgeInsets.symmetric(horizontal: 8.w),
+      content: Text(
+        value,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 14.sp,
+        ),
+      ),
+      actionsPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+      actions: [
+        TextButton(
+          onPressed: ()=> Navigator.pop(context), 
+          child: const Text('kembali'),
+        )
+      ],
+    );
+  }
+}
+
 class LoadingDialog extends StatelessWidget {
   const LoadingDialog({super.key});
 
