@@ -25,6 +25,12 @@ import 'package:siakad_lpk/features/register/data/repositories/register_reposito
 import 'package:siakad_lpk/features/register/domain/repositories/register_repository.dart';
 import 'package:siakad_lpk/features/register/domain/usecases/post_register_usecase.dart';
 import 'package:siakad_lpk/features/register/presentation/bloc/register_bloc.dart';
+import 'package:siakad_lpk/features/schedule/data/datasources/schedule_local_datasource.dart';
+import 'package:siakad_lpk/features/schedule/data/datasources/schedule_remote_datasource.dart';
+import 'package:siakad_lpk/features/schedule/data/repositories/schedule_repository_impl.dart';
+import 'package:siakad_lpk/features/schedule/domain/repositories/schedule_repository.dart';
+import 'package:siakad_lpk/features/schedule/domain/usecases/get_schedule_usecase.dart';
+import 'package:siakad_lpk/features/schedule/presentation/bloc/schedule_bloc.dart';
 
 final sl =GetIt.instance;
 
@@ -92,6 +98,23 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<InformationLocalDataSource>(
     () => InformationLocalDataSourceImpl(preferences: sl())
+  );
+
+  //schedule
+  //bloc
+  sl.registerFactory(() => ScheduleBloc(sl()));
+  //usecases
+  sl.registerLazySingleton(() => GetScheduleUseCase(sl()));
+  //repositories
+  sl.registerLazySingleton<ScheduleRepository>(
+    () => ScheduleRepositoryImpl(sl(), sl(), sl())
+  );
+  //datasources
+  sl.registerLazySingleton<ScheduleRemoteDataSource>(
+    () => ScheduleRemoteDataSourceImpl(sl(), sl())
+  );
+  sl.registerLazySingleton<ScheduleLocalDataSource>(
+    () => ScheduleLocalDataSourceImpl(sl())
   );
 
 
