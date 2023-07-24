@@ -10,12 +10,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/column_title_and_textfield_widget.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/custom_textfield_widget.dart';
+import 'package:siakad_lpk/features/register/data/models/register_model.dart';
 import 'package:siakad_lpk/features/register/presentation/bloc/register_bloc.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/custom_dropdown_btn_widget.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/next_btn_widget.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/previous_btn_widget.dart';
 import 'package:siakad_lpk/injection_container.dart';
 import 'package:siakad_lpk/themes/colors.dart';
+import 'package:siakad_lpk/widgets/custom_dialog_widget.dart';
 import 'package:siakad_lpk/widgets/text_widget.dart';
 
 class RegisterView extends StatelessWidget {
@@ -73,9 +75,14 @@ class _RegisterPageState extends State<RegisterPage> {
     'Buddha',
     'Khonghucu'
   ];
+  List<String> classList = [
+    'Dasar',
+    'Advanced'
+  ];
 
   late String marriageStatus;
   late String religion;
+  late String kelas;
 
   @override
   void dispose() {
@@ -107,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           SizedBox(
             width: 1.sw,
-            height: 1.sh * 0.84,
+            height: 1.sh * 0.88,
             child: PageView(
               controller: pageViewController,
               children: [
@@ -120,13 +127,42 @@ class _RegisterPageState extends State<RegisterPage> {
           SizedBox(
             height: 4.h,
           ),
-          navigationRowBtnWidget(),
+          registerBlocListenerWidget(),
           SizedBox(
             height: 14.h,
           ),
           loginTextWidget(context)
         ],
       ),
+    );
+  }
+
+  BlocListener<RegisterBloc, RegisterState> registerBlocListenerWidget() {
+    return BlocListener<RegisterBloc, RegisterState>(
+      listener: (context, state) {
+        if(state is RegisterSucceed){
+          context.pop();
+          showDialog(
+            context: context, 
+            builder: (_) => const CustomDialog(
+              value: 'Pendaftaran berhasil, silahkan melakukan login', 
+              title: 'Berhasil'
+            )
+          );
+        } else if (state is RegisterFailed){
+          context.pop();
+          showDialog(
+            context: context, 
+            builder: (_)=> ErrorDialog(errorValue: state.error.message.toString())
+          ); 
+        } else {
+          showDialog(
+            context: context, 
+            builder: (_)=> const LoadingDialog()
+          );
+        }
+      },
+      child: navigationRowBtnWidget(),
     );
   }
 
@@ -326,7 +362,29 @@ class _RegisterPageState extends State<RegisterPage> {
                 pages++;
               });
             } else {
-              
+              context.read<RegisterBloc>().add(
+                PostRegisterEvent(
+                  RegisterModel(
+                    fullName: fullNameEditingController.text, 
+                    email: emailEditingController.text, 
+                    password: passwordEditingController.text, 
+                    image: photoPath!, 
+                    ktp: idEditingController.text, 
+                    kontak: phoneEditingController.text, 
+                    kelas: kelas, 
+                    alamat: addressEditingController.text, 
+                    tempatLahir: pobEditingController.text, 
+                    tglLahir: DateFormat('yyyy-MM-dd', 'id').format(date), 
+                    pendidikanTerakhir: lastEduEditingController.text, 
+                    status: marriageStatus, 
+                    agama: religion, 
+                    namaOrtu: parentEditingController.text, 
+                    pengalaman: experienceEditingController.text, 
+                    metodeBayar: 'Transfer', 
+                    buktiBayar: path!
+                  )
+                )
+              );
             }
           },
         )
@@ -438,8 +496,34 @@ class _RegisterPageState extends State<RegisterPage> {
         SizedBox(
           height: 12.h,
         ),
-        religionTextFieldWidget()
+        religionTextFieldWidget(),
+        SizedBox(
+          height: 12.h,
+        ),
+        classTextFieldWidget()
       ],
+    );
+  }
+
+  ColumnTitleAndTextFieldWidget classTextFieldWidget() {
+    return ColumnTitleAndTextFieldWidget(
+      textfield: CustomDropdownBtnWidget(
+        items: classList
+            .map<DropdownMenuItem<String>>(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e),
+              ),
+            )
+            .toList(),
+        onChange: (value) {
+          setState(() {
+            kelas = value!;
+          });
+        },
+      ),
+      title: 'Kelas',
+      size: 15,
     );
   }
 
