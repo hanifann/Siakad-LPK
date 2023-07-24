@@ -3,6 +3,14 @@ import 'package:http/http.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siakad_lpk/core/platform/network_info.dart';
+import 'package:siakad_lpk/features/login/data/datasources/login_local_datasources.dart';
+import 'package:siakad_lpk/features/login/data/datasources/login_remote_datasource.dart';
+import 'package:siakad_lpk/features/login/data/repositories/login_repository_impl.dart';
+import 'package:siakad_lpk/features/login/domain/repositories/login_repositort.dart';
+import 'package:siakad_lpk/features/login/domain/usecases/get_user_usecase.dart';
+import 'package:siakad_lpk/features/login/domain/usecases/post_login_usecase.dart';
+import 'package:siakad_lpk/features/login/presentation/bloc/login_bloc.dart';
+import 'package:siakad_lpk/features/login/presentation/bloc/user_bloc.dart';
 import 'package:siakad_lpk/features/register/data/datasources/register_remote_datasources.dart';
 import 'package:siakad_lpk/features/register/data/repositories/register_repository_impl.dart';
 import 'package:siakad_lpk/features/register/domain/repositories/register_repository.dart';
@@ -27,6 +35,28 @@ Future<void> init() async {
   sl.registerLazySingleton<RegisterRemoteDataSource>(
     () => RegisterRemoteDataSourceImpl(client: sl())
   );
+
+  //login
+  //bloc
+  sl.registerFactory(() => LoginBloc(useCase: sl()));
+  sl.registerFactory(() => UserBloc(useCase: sl()));
+  //usecases
+  sl.registerLazySingleton(() => PostLoginUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetUserUseCase(repository: sl()));
+  //repositories
+  sl.registerLazySingleton<LoginRepository>(() => LoginRepositoryImpl(
+    networkInfo: sl(), 
+    remoteDataSource: sl(), 
+    localDataSource: sl()
+  ));
+  //datasources
+  sl.registerLazySingleton<LoginRemoteDataSource>(() => LoginRemoteDataSourceImpl(
+    client: sl(), 
+    preferences: sl()
+  ));
+   sl.registerLazySingleton<LoginLocalDataSource>(() => LoginLocalDataSourceImpl(
+    preferences: sl()
+  ));
 
 
   //!core
