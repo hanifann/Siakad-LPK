@@ -21,7 +21,7 @@ class LoginLocalDataSourceImpl implements LoginLocalDataSource {
   Future<void>? cachedToken(LoginModel login) {
     return preferences.setString(
       Env.token,
-      jsonEncode(login.data)
+      login.data
     );
   }
 
