@@ -4,6 +4,12 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siakad_lpk/core/platform/network_info.dart';
 import 'package:siakad_lpk/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:siakad_lpk/features/beranda/data/datasources/information_local_datasource.dart';
+import 'package:siakad_lpk/features/beranda/data/datasources/information_remote_datasources.dart';
+import 'package:siakad_lpk/features/beranda/data/repositories/information_repository_impl.dart';
+import 'package:siakad_lpk/features/beranda/domain/repositories/information_repository.dart';
+import 'package:siakad_lpk/features/beranda/domain/usecases/get_information_usecase.dart';
+import 'package:siakad_lpk/features/beranda/presentation/bloc/information_bloc.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_local_datasources.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_remote_datasource.dart';
 import 'package:siakad_lpk/features/login/data/repositories/login_repository_impl.dart';
@@ -69,6 +75,24 @@ Future<void> init() async {
   //profile
   //bloc
   sl.registerFactory(() => ProfileBloc(sl(), sl()));
+
+
+  //beranda
+  //bloc
+  sl.registerFactory(() => InformationBloc(useCase: sl()));
+  //usecases
+  sl.registerLazySingleton(() => GetInformationUseCase(repository: sl()));
+  //repositoies
+  sl.registerLazySingleton<InformationRepository>(
+    () => InformationRepositoryImpl(networkInfo: sl(), remoteDataSource: sl(), localDataSource: sl())
+  );
+  //datasources
+  sl.registerLazySingleton<InformationRemoteDataSource>(
+    () => InformationRemoteDataSourceImpl(client: sl(), preferences: sl())
+  );
+  sl.registerLazySingleton<InformationLocalDataSource>(
+    () => InformationLocalDataSourceImpl(preferences: sl())
+  );
 
 
   //!core
