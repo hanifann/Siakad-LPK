@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,13 +27,19 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
-        if(state is AuthAuthenticated){
+        if (state is AuthAuthenticated) {
           if (state.user.role == '2') {
-            return const HomeStudentView();
+            return BlocProvider.value(
+              value: context.read<AuthCubit>(),
+              child: const HomeStudentView(),
+            );
           } else {
-            return const HomeLecturerView();
+            return BlocProvider.value(
+              value: context.read<AuthCubit>(),
+              child: const HomeLecturerView(),
+            );
           }
-        } else if (state is AuthUnauthorized){
+        } else if (state is AuthUnauthorized) {
           return const LandingView();
         } else {
           return Scaffold(
@@ -42,10 +47,9 @@ class AuthPage extends StatelessWidget {
               width: 1.sw,
               height: 1.sh,
               child: const Center(
-                child: CircularProgressIndicator.adaptive(
-                  valueColor: AlwaysStoppedAnimation(kPrimaryColor),
-                )
-              ),
+                  child: CircularProgressIndicator.adaptive(
+                valueColor: AlwaysStoppedAnimation(kPrimaryColor),
+              )),
             ),
           );
         }
