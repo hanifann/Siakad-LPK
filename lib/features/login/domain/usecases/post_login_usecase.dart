@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:siakad_lpk/core/error/failure.dart';
 import 'package:siakad_lpk/core/usecase/usecase.dart';
 import 'package:siakad_lpk/features/login/domain/entities/login.dart';
-import 'package:siakad_lpk/features/login/domain/entities/user.dart';
 import 'package:siakad_lpk/features/login/domain/repositories/login_repositort.dart';
 
 class PostLoginUseCase extends UseCase<Login, UserParams> {
