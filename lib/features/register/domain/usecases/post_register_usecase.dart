@@ -2,12 +2,36 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:siakad_lpk/core/error/failure.dart';
 import 'package:siakad_lpk/core/usecase/usecase.dart';
+import 'package:siakad_lpk/features/register/data/models/register_model.dart';
+import 'package:siakad_lpk/features/register/domain/repositories/register_repository.dart';
 
 class PostRegisterUseCase extends UseCase<String, RegisterParams> {
+  final RegisterRepository repository;
+
+  PostRegisterUseCase({required this.repository});
   @override
-  Future<Either<Failure, String>?> call(params) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Either<Failure, String>?> call(params) async {
+    return repository.postRegister(
+      RegisterModel(
+        fullName: params.fullName, 
+        email: params.email, 
+        password: params.password, 
+        image: params.image, 
+        ktp: params.ktp, 
+        kontak: params.kontak, 
+        kelas: params.kelas, 
+        alamat: params.alamat, 
+        tempatLahir: params.tempatLahir, 
+        tglLahir: params.tglLahir, 
+        pendidikanTerakhir: params.pendidikanTerakhir, 
+        status: params.status, 
+        agama: params.agama, 
+        namaOrtu: params.namaOrtu, 
+        pengalaman: params.pengalaman, 
+        metodeBayar: params.metodeBayar, 
+        buktiBayar: params.buktiBayar
+      )
+    );
   }
   
 }
