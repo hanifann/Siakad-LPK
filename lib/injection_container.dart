@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siakad_lpk/core/platform/network_info.dart';
+import 'package:siakad_lpk/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_local_datasources.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_remote_datasource.dart';
 import 'package:siakad_lpk/features/login/data/repositories/login_repository_impl.dart';
@@ -57,6 +58,10 @@ Future<void> init() async {
    sl.registerLazySingleton<LoginLocalDataSource>(() => LoginLocalDataSourceImpl(
     preferences: sl()
   ));
+
+  //auth
+  //cubit
+  sl.registerFactory(() => AuthCubit(sl(), sl()));
 
 
   //!core
