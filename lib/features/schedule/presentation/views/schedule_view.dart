@@ -87,7 +87,7 @@ class _SchedulePageState extends State<SchedulePage> {
             itemBuilder: (context, index) {
               String temp = day.where((element) => element.isSelected == true).first.day;
               return ContainerScheduleWidget(
-                scheduleData: state.schedule.data.where((element) => element.hari == temp).first
+                scheduleData: state.schedule.data.where((element) => element.hari == temp).toList()[index]
               );
             }, 
             separatorBuilder: (_,__) => SizedBox(height: 8.h,), 
