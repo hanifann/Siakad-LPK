@@ -13,5 +13,4 @@ class GetUserUseCase extends UseCase<User, NoParams> {
   Future<Either<Failure, User>?> call(NoParams params) async {
     return repository.getUser();
   }
-  
 }
