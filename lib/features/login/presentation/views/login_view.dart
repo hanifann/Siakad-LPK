@@ -1,11 +1,16 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:siakad_lpk/features/login/presentation/bloc/login_bloc.dart';
+import 'package:siakad_lpk/features/login/presentation/bloc/user_bloc.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/column_title_and_textfield_widget.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/custom_textfield_widget.dart';
+import 'package:siakad_lpk/injection_container.dart';
 import 'package:siakad_lpk/themes/colors.dart';
+import 'package:siakad_lpk/widgets/custom_dialog_widget.dart';
 import 'package:siakad_lpk/widgets/text_widget.dart';
 
 class LoginView extends StatelessWidget {
@@ -13,7 +18,18 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const LoginPage();
+    return MultiBlocProvider(
+        providers: [
+        BlocProvider(
+          create: (context) => sl<LoginBloc>(),
+    
+        ),
+          BlocProvider(
+              create: (context) => sl<UserBloc>(),
+          ),
+        ],
+      child: const LoginPage(),
+    );
   }
 }
 
@@ -53,12 +69,51 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 16.h,),
             passwordTextfieldWidget(),
             SizedBox(height: 24.h,),
-            loginBtnWidget(),
+            loginBlocListenerWidget(),
             SizedBox(height: 8.h,),
             registerTextWidget(context)
           ],
         ),
       ),
+    );
+  }
+
+  MultiBlocListener loginBlocListenerWidget() {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<LoginBloc, LoginState>(
+          listener: (context, state) {
+            if(state is LoginSucceed){
+              context.read<UserBloc>().add(GetUserEvent());
+            } else if (state is LoginFailed){
+              context.pop();
+              showDialog(
+                context: context, 
+                builder: (_) => ErrorDialog(errorValue: state.error.message!)
+              );
+            } else {
+              showDialog(
+                context: context, 
+                builder: (_) => const LoadingDialog()
+              );
+            }
+          } 
+        ),
+        BlocListener<UserBloc, UserState>(
+          listener: (context, state) {
+            if(state is UserLoaded){
+              context.pushReplacement('/');
+            } else if (state is UserFailed){
+              context.pop();
+              showDialog(
+                context: context, 
+                builder: (_) => ErrorDialog(errorValue: state.error.message!)
+              );
+            }
+          },
+        ),
+      ],
+      child: loginBtnWidget(),
     );
   }
 
@@ -100,7 +155,12 @@ class _LoginPageState extends State<LoginPage> {
       height: 42.h,
       child: ElevatedButton(
         onPressed: () {
-          
+          context.read<LoginBloc>().add(
+            PostLoginEvent(
+              emailEditingController.text, 
+              passwordEditingController.text
+            )
+          );
         }, 
         style: ElevatedButton.styleFrom(
           backgroundColor: kPrimaryColor
