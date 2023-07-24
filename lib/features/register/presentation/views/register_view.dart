@@ -156,7 +156,6 @@ class _RegisterPageState extends State<RegisterPage> {
         onTap: () async {
           FilePickerResult? result =
               await FilePicker.platform.pickFiles(type: FileType.image);
-
           if (result != null) {
             File file = File(result.files.single.path!);
             setState(() {
@@ -202,7 +201,6 @@ class _RegisterPageState extends State<RegisterPage> {
         onTap: () async {
           FilePickerResult? result =
               await FilePicker.platform.pickFiles(type: FileType.image);
-
           if (result != null) {
             File file = File(result.files.single.path!);
             setState(() {
@@ -222,6 +220,7 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
+                flex: path == null ? 0 : 1,
                 child: CustomTextWidget(
                   text: path == null ? 'Pilih file' : path!,
                   size: 16.sp,
@@ -305,23 +304,30 @@ class _RegisterPageState extends State<RegisterPage> {
           visible: pages == 0 ? false : true,
           child: PreviousBtnWidget(
             onPressed: () {
+              pageViewController.previousPage(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.ease
+              );
               setState(() {
                 pages--;
               });
-              pageViewController.previousPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.ease);
             },
           ),
         ),
         NextBtnWidget(
+          text: pages != 2 ? 'Selanjutnya' : 'Simpan',
           onPressed: () {
-            setState(() {
-              pages++;
-            });
-            pageViewController.nextPage(
+            if(pages != 2){
+              pageViewController.nextPage(
                 duration: const Duration(milliseconds: 300),
-                curve: Curves.ease);
+                curve: Curves.ease
+              );
+              setState(() {
+                pages++;
+              });
+            } else {
+              
+            }
           },
         )
       ],
