@@ -58,4 +58,14 @@ class LoginRepositoryImpl implements LoginRepository {
     }
   }
   
+  @override
+  Future<Either<Failure, User>>? getLocalUser() async {
+    try {
+      final response = await localDataSource.getCachedUser();
+      return Right(response!);
+    } on CacheException catch (_){
+        return const Left(CacheFailure());
+    }
+  }
+  
 }

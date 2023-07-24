@@ -9,4 +9,5 @@ abstract class LoginRepository {
     required String password
   });
   Future<Either<Failure, User>>? getUser();
+  Future<Either<Failure, User>>? getLocalUser();
 }
