@@ -14,4 +14,8 @@ abstract class Env {
   static String info = _Env.info;
   @EnviedField(obfuscate: true, varName: 'JADWAL_KEY')
   static String jadwal = _Env.jadwal;
+  @EnviedField(obfuscate: true, varName: 'LPK_KEY')
+  static String lpk = _Env.lpk;
+  @EnviedField(obfuscate: true, varName: 'TEST_KEY')
+  static String test = _Env.test;
 }
