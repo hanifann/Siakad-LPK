@@ -31,6 +31,13 @@ import 'package:siakad_lpk/features/schedule/data/repositories/schedule_reposito
 import 'package:siakad_lpk/features/schedule/domain/repositories/schedule_repository.dart';
 import 'package:siakad_lpk/features/schedule/domain/usecases/get_schedule_usecase.dart';
 import 'package:siakad_lpk/features/schedule/presentation/bloc/schedule_bloc.dart';
+import 'package:siakad_lpk/features/score/data/datasources/score_local_datasources.dart';
+import 'package:siakad_lpk/features/score/data/datasources/score_remote_datasources.dart';
+import 'package:siakad_lpk/features/score/data/repositories/score_repository_impl.dart';
+import 'package:siakad_lpk/features/score/domain/repositories/score_repository.dart';
+import 'package:siakad_lpk/features/score/domain/usecase/get_lpk_score_usecase.dart';
+import 'package:siakad_lpk/features/score/domain/usecase/get_test_score_usecase.dart';
+import 'package:siakad_lpk/features/score/presentation/bloc/score_bloc.dart';
 
 final sl =GetIt.instance;
 
@@ -115,6 +122,24 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<ScheduleLocalDataSource>(
     () => ScheduleLocalDataSourceImpl(sl())
+  );
+
+  //score
+  //bloc
+  sl.registerFactory(() => ScoreBloc(sl(), sl()));
+  //usecases
+  sl.registerLazySingleton(() => GetLpkScoreUseCase(sl()));
+  sl.registerLazySingleton(() => GetTestScoreUseCase(sl()));
+  //repositories
+  sl.registerLazySingleton<ScoreRepository>(
+    () => ScoreRepositoryImpl(sl(), sl(), sl())
+  );
+  //datasources
+  sl.registerLazySingleton<ScoreRemoteDataSource>(
+    () => ScoreRemoteDataSourceImpl(sl(), sl())
+  );
+  sl.registerLazySingleton<ScoreLocalDataSource>(
+    () => ScoreLocalDataSourceImpl(sl())
   );
 
 
