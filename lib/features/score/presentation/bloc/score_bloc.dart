@@ -19,6 +19,7 @@ class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
     GetTestScoreEvent event,
     Emitter<ScoreState> emit,
   ) async {
+    emit(TestScoreLoading());
     final result = await testUseCase(NoParams());
     result!.fold(
       (l) => emit(TestScoreFailed(ErrorModel(message: l.message))), 

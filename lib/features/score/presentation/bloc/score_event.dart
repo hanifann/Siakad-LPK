@@ -10,7 +10,3 @@ abstract class ScoreEvent extends Equatable {
 class GetTestScoreEvent extends ScoreEvent {
   
 }
-
-class GetLpkScoreEvent extends ScoreEvent {
-  
-}
