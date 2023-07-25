@@ -37,6 +37,7 @@ import 'package:siakad_lpk/features/score/data/repositories/score_repository_imp
 import 'package:siakad_lpk/features/score/domain/repositories/score_repository.dart';
 import 'package:siakad_lpk/features/score/domain/usecase/get_lpk_score_usecase.dart';
 import 'package:siakad_lpk/features/score/domain/usecase/get_test_score_usecase.dart';
+import 'package:siakad_lpk/features/score/presentation/bloc/lpk_score_bloc.dart';
 import 'package:siakad_lpk/features/score/presentation/bloc/score_bloc.dart';
 
 final sl =GetIt.instance;
@@ -126,7 +127,8 @@ Future<void> init() async {
 
   //score
   //bloc
-  sl.registerFactory(() => ScoreBloc(sl(), sl()));
+  sl.registerFactory(() => ScoreBloc(sl()));
+  sl.registerFactory(() => LpkScoreBloc(sl()));
   //usecases
   sl.registerLazySingleton(() => GetLpkScoreUseCase(sl()));
   sl.registerLazySingleton(() => GetTestScoreUseCase(sl()));
