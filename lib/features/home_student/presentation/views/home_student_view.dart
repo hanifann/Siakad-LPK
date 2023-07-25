@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:siakad_lpk/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:siakad_lpk/features/beranda/presentation/views/beranda_view.dart';
 import 'package:siakad_lpk/features/schedule/presentation/views/schedule_view.dart';
+import 'package:siakad_lpk/features/score/presentation/views/score_view.dart';
 import 'package:siakad_lpk/themes/colors.dart';
 import 'package:siakad_lpk/widgets/text_widget.dart';
 
@@ -30,7 +31,7 @@ int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     BerandaView(),
     ScheduleView(),
-    Text('nilai')
+    ScoreView()
   ];
 
   static const List<BottomNavigationBarItem> _bottomNavItem = [
