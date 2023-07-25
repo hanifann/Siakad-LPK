@@ -23,10 +23,10 @@ class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
     GetLpkScoreEvent event,
     Emitter<ScoreState> emit,
   ) async {
-    emit(ScoreLoading());
+    emit(LpkScoreLoading());
     final result = await lpkUseCase(NoParams());
     result!.fold(
-      (l) => emit(ScoreFailed(ErrorModel(message: l.message))), 
+      (l) => emit(LpkScoreFailed(ErrorModel(message: l.message))), 
       (r) => emit(LpkScoreLoaded(r))
     );
   }
@@ -35,10 +35,10 @@ class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
     GetTestScoreEvent event,
     Emitter<ScoreState> emit,
   ) async {
-    emit(ScoreLoading());
+    emit(TestScoreLoading());
     final result = await testUseCase(NoParams());
     result!.fold(
-      (l) => emit(ScoreFailed(ErrorModel(message: l.message))), 
+      (l) => emit(TestScoreFailed(ErrorModel(message: l.message))), 
       (r) => emit(TestScoreLoaded(r))
     );
   }

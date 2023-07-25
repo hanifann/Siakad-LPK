@@ -21,12 +21,22 @@ class LpkScoreLoaded extends ScoreState {
   const LpkScoreLoaded(this.lpkScore);
 }
 
-class ScoreFailed extends ScoreState {
+class LpkScoreFailed extends ScoreState {
   final ErrorModel error;
 
-  const ScoreFailed(this.error);
+  const LpkScoreFailed(this.error);
 }
 
-class ScoreLoading extends ScoreState {
+class TestScoreFailed extends ScoreState {
+  final ErrorModel error;
+
+  const TestScoreFailed(this.error);
+}
+
+class LpkScoreLoading extends ScoreState {
+  
+}
+
+class TestScoreLoading extends ScoreState {
   
 }
