@@ -55,4 +55,17 @@ class InputScoreRepositoryImpl implements InputScoreRepository {
     }
   }
   
+  @override
+  Future<Either<Failure, String>>? postNilai(String idSiswa, String idMateri, String nilai)async{
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await remoteDataSource.postNilai(idSiswa, idMateri, nilai);
+        return Right(response!);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.error.message));
+      }
+    } else {
+      return const Left(CacheFailure());
+    }
+  }
 }

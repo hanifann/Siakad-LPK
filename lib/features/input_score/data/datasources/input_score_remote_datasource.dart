@@ -11,6 +11,7 @@ import 'package:siakad_lpk/features/input_score/data/models/student_model.dart';
 abstract class InputScoreRemoteDataSource {
   Future<StudentModel>? getStudent();
   Future<MateriModel>? getMateri();
+  Future<String>? postNilai(String idSiswa, String idMateri, String nilai);
 }
 
 class InputScoreRemoteDataSourceImpl implements InputScoreRemoteDataSource {
@@ -46,6 +47,27 @@ class InputScoreRemoteDataSourceImpl implements InputScoreRemoteDataSource {
     );
     if(response.statusCode == 200){
       return MateriModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw ServerException(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+  
+  @override
+  Future<String>? postNilai(String idSiswa, String idMateri, String nilai)async{
+    final response = await client.post(
+      Uri.http(Env.url, '/api/input_nilai_lpk'),
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${preferences.getString(Env.token)}'
+      },
+      body: {
+        'id_materi': idMateri,
+        'id_siswa': idSiswa,
+        'nilai': nilai
+      }
+    );
+    if(response.statusCode == 200){
+      return 'Success';
     } else {
       throw ServerException(ErrorModel.fromJson(jsonDecode(response.body)));
     }
