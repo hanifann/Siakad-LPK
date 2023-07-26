@@ -18,4 +18,6 @@ abstract class Env {
   static String lpk = _Env.lpk;
   @EnviedField(obfuscate: true, varName: 'TEST_KEY')
   static String test = _Env.test;
+  @EnviedField(obfuscate: true, varName: 'STUDENT_KEY')
+  static String student = _Env.student;
 }
