@@ -20,4 +20,6 @@ abstract class Env {
   static String test = _Env.test;
   @EnviedField(obfuscate: true, varName: 'STUDENT_KEY')
   static String student = _Env.student;
+  @EnviedField(obfuscate: true, varName: 'MATERI_KEY')
+  static String materi = _Env.materi;
 }
