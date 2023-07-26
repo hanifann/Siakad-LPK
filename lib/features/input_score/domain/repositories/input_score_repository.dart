@@ -6,4 +6,9 @@ import 'package:siakad_lpk/features/input_score/domain/entities/student.dart';
 abstract class InputScoreRepository {
   Future<Either<Failure, Student>>? getStudent();
   Future<Either<Failure, Materi>>? getMateri();
+  Future<Either<Failure, String>>? postNilai(
+    String idSiswa,
+    String idMateri,
+    String nilai
+  );
 }
