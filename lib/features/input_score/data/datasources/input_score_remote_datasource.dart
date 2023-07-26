@@ -5,10 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siakad_lpk/core/error/exception.dart';
 import 'package:siakad_lpk/core/error/model/error_model.dart';
 import 'package:siakad_lpk/env/env.dart';
+import 'package:siakad_lpk/features/input_score/data/models/materi_model.dart';
 import 'package:siakad_lpk/features/input_score/data/models/student_model.dart';
 
 abstract class InputScoreRemoteDataSource {
   Future<StudentModel>? getStudent();
+  Future<MateriModel>? getMateri();
 }
 
 class InputScoreRemoteDataSourceImpl implements InputScoreRemoteDataSource {
@@ -28,6 +30,22 @@ class InputScoreRemoteDataSourceImpl implements InputScoreRemoteDataSource {
     );
     if(response.statusCode == 200){
       return StudentModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw ServerException(ErrorModel.fromJson(jsonDecode(response.body)));
+    }
+  }
+  
+  @override
+  Future<MateriModel>? getMateri() async {
+    final response = await client.get(
+      Uri.http(Env.url, '/api/materi'),
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${preferences.getString(Env.token)}'
+      }
+    );
+    if(response.statusCode == 200){
+      return MateriModel.fromJson(jsonDecode(response.body));
     } else {
       throw ServerException(ErrorModel.fromJson(jsonDecode(response.body)));
     }
