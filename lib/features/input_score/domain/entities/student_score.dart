@@ -19,6 +19,7 @@ class StudentScoreData extends Equatable {
     final String fullName;
     final String nis;
     final String namaMateri;
+    final String idSiswa;
     final String nilai;
 
     const StudentScoreData({
@@ -26,6 +27,7 @@ class StudentScoreData extends Equatable {
         required this.fullName,
         required this.nis,
         required this.namaMateri,
+        required this.idSiswa,
         required this.nilai,
     });
     
@@ -35,6 +37,7 @@ class StudentScoreData extends Equatable {
         fullName,
         nis,
         namaMateri,
+        idSiswa,
         nilai
       ];
 
