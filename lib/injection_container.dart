@@ -10,6 +10,13 @@ import 'package:siakad_lpk/features/beranda/data/repositories/information_reposi
 import 'package:siakad_lpk/features/beranda/domain/repositories/information_repository.dart';
 import 'package:siakad_lpk/features/beranda/domain/usecases/get_information_usecase.dart';
 import 'package:siakad_lpk/features/beranda/presentation/bloc/information_bloc.dart';
+import 'package:siakad_lpk/features/input_score/data/datasources/input_score_local_datasource.dart';
+import 'package:siakad_lpk/features/input_score/data/datasources/input_score_remote_datasource.dart';
+import 'package:siakad_lpk/features/input_score/data/repositories/input_score_repository_impl.dart';
+import 'package:siakad_lpk/features/input_score/domain/repositories/input_score_repository.dart';
+import 'package:siakad_lpk/features/input_score/domain/usecases/get_materi_usecase.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/materi_bloc.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/student_bloc.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_local_datasources.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_remote_datasource.dart';
 import 'package:siakad_lpk/features/login/data/repositories/login_repository_impl.dart';
@@ -142,6 +149,25 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<ScoreLocalDataSource>(
     () => ScoreLocalDataSourceImpl(sl())
+  );
+
+  //input_score
+  //bloc
+  sl.registerFactory(() => StudentBloc(sl()));
+  sl.registerFactory(() => MateriBloc(sl()));
+  //usecases
+  sl.registerLazySingleton(() => GetScheduleUseCase(sl()));
+  sl.registerLazySingleton(() => GetMateriUseCase(sl()));
+  //repositories
+  sl.registerLazySingleton<InputScoreRepository>(
+    () => InputScoreRepositoryImpl(sl(), sl(), sl())
+  );
+  //datasources
+  sl.registerLazySingleton<InputScoreRemoteDataSource>(
+    () => InputScoreRemoteDataSourceImpl(sl(), sl())
+  );
+  sl.registerLazySingleton<InputScoreLocalDataSource>(
+    () => InputScoreLocalDataSourceImpl(sl())
   );
 
 
