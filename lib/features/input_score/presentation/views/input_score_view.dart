@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,9 +7,13 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:siakad_lpk/features/input_score/domain/entities/materi.dart';
 import 'package:siakad_lpk/features/input_score/domain/entities/student.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/delete_score_bloc.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/get_score_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/input_score_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/materi_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/student_bloc.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/update_score_bloc.dart';
+import 'package:siakad_lpk/features/input_score/presentation/widgets/container_studen_score_widget.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/column_title_and_textfield_widget.dart';
 import 'package:siakad_lpk/features/login/presentation/widgets/custom_textfield_widget.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/custom_dropdown_btn_widget.dart';
@@ -34,6 +38,15 @@ class InputScoreView extends StatelessWidget {
         BlocProvider(
           create: (context) => sl<InputScoreBloc>(),
         ),
+        BlocProvider(
+          create: (context) => sl<DeleteScoreBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<UpdateScoreBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<GetScoreBloc>(),
+        ),
       ],
       child: const InputScorePage(),
     );
@@ -50,6 +63,8 @@ class InputScorePage extends StatefulWidget {
 class _InputScorePageState extends State<InputScorePage> {
   String? studenDropdownValue;
   String? materiDropdownValue;
+  bool isEdit = false;
+  String? idNilai;
 
   final nilaiEditingController = TextEditingController();
 
@@ -69,9 +84,134 @@ class _InputScorePageState extends State<InputScorePage> {
           SizedBox(height: 12.h,),
           studentBlocBuilderWidget(),
           SizedBox(height: 12.h,),
-          inputNilaiBlocListenerWidget()
+          inputNilaiBlocListenerWidget(),
+          getNilaiBlocBuilderWidget(),
+          deleteScoreBlocListenerWidget(),
+          updateScoreBlocListenerWidget()
         ],
       ),
+    );
+  }
+
+  BlocListener<UpdateScoreBloc, UpdateScoreState> updateScoreBlocListenerWidget() {
+    return BlocListener<UpdateScoreBloc, UpdateScoreState>(
+      listener: (context, state) {
+        if(state is UpdateScoreSucceed){
+          showDialog(
+            context: context, 
+            builder: (_) {
+              return const CustomDialog(
+                value: 'Berhail update nilai', 
+                title: 'Berhasil'
+              );
+            }
+          ).then((_) => context.pop());
+          context.read<GetScoreBloc>().add(
+            FetchScoreEvent(materiDropdownValue!)
+          );
+        } else if (state is UpdateScoreFailed){
+          context.pop();
+          showDialog(
+            context: context, 
+            builder: (_) => ErrorDialog(errorValue: state.error.message!)
+          );
+        } else {
+          showDialog(
+            context: context, 
+            builder: (_) => const LoadingDialog()
+          );
+        }
+      },
+      child: const SizedBox(),
+    );
+  }
+
+  BlocListener<DeleteScoreBloc, DeleteScoreState> deleteScoreBlocListenerWidget() {
+    return BlocListener<DeleteScoreBloc, DeleteScoreState>(
+      listener: (context, state) {
+        if(state is DeleteScoreDSucceed){
+          showDialog(
+            context: context, 
+            builder: (_) {
+              return const CustomDialog(
+                value: 'Berhail menghapus nilai', 
+                title: 'Berhasil'
+              );
+            }
+          ).then((_) => context.pop());
+          context.read<GetScoreBloc>().add(
+            FetchScoreEvent(materiDropdownValue!)
+          );
+        } else if (state is DeleteScoreFailed){
+          context.pop();
+          showDialog(
+            context: context, 
+            builder: (_) => ErrorDialog(errorValue: state.error.message!)
+          );
+        } else {
+          showDialog(
+            context: context, 
+            builder: (_) => const LoadingDialog()
+          );
+        }
+      },
+      child: const SizedBox(),
+    );
+  }
+
+  BlocBuilder<GetScoreBloc, GetScoreState> getNilaiBlocBuilderWidget() {
+    return BlocBuilder<GetScoreBloc, GetScoreState>(
+      builder: (context, state) {
+        if(state is GetScoreLoaded){
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTextWidget(
+                text: state.score.data[0].namaMateri,
+                size: 16.sp,
+                weight: FontWeight.w500,
+              ),
+              SizedBox(height: 4.h,),
+              ListView.separated(
+                shrinkWrap: true,
+                primary: false,
+                itemBuilder: (context, index) {
+                  return ConainerStudentScoreWidget(
+                    student: state.score.data[index],
+                    onEdit: () {
+                      setState(() {
+                        nilaiEditingController.text = state.score.data[index].nilai;
+                        isEdit = true;
+                        idNilai = state.score.data[index].id;
+                        studenDropdownValue = state.score.data[index].idSiswa;
+                      });
+                    },
+                    onDelete: () {
+                      context.read<DeleteScoreBloc>().add(
+                        DeleteNilai(state.score.data[index].id)
+                      );
+                    },
+                  );
+                }, 
+                separatorBuilder: (_,__) => SizedBox(height: 12.h,), 
+                itemCount: state.score.data.length
+              )
+            ],
+          );
+        } else if (state is GetScoreFailed){
+          return Text(state.error.message!);
+        } else if (state is GetScoreLoading){
+          return Center(
+            child: CircularProgressIndicator.adaptive(
+              valueColor: const AlwaysStoppedAnimation(kPrimaryColor),
+              backgroundColor: 
+                Platform.isAndroid ? Colors.white : kPrimaryColor,
+            ),
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
     );
   }
 
@@ -88,6 +228,12 @@ class _InputScorePageState extends State<InputScorePage> {
               );
             }
           ).then((_) => context.pop());
+          context.read<GetScoreBloc>().add(
+            FetchScoreEvent(materiDropdownValue!)
+          );
+          setState(() {
+            isEdit = false;
+          });
         } else if (state is InputScoreFailed){
           context.pop();
           showDialog(
@@ -133,13 +279,24 @@ class _InputScorePageState extends State<InputScorePage> {
                   )
                 );
               } else {
-                context.read<InputScoreBloc>().add(
-                  PostInputScoreEvent(
-                    idSiswa: studenDropdownValue!, 
-                    idMateri: materiDropdownValue!, 
-                    nilai: nilaiEditingController.text
-                  )
-                );
+                if(isEdit){
+                  context.read<UpdateScoreBloc>().add(
+                    UpdateNilaiEvent(
+                      idNilai!,
+                      studenDropdownValue!,
+                      materiDropdownValue!,
+                      nilaiEditingController.text
+                    )
+                  );
+                } else {
+                  context.read<InputScoreBloc>().add(
+                    PostInputScoreEvent(
+                      idSiswa: studenDropdownValue!, 
+                      idMateri: materiDropdownValue!, 
+                      nilai: nilaiEditingController.text
+                    )
+                  );
+                }
               }
             }, 
             style: ElevatedButton.styleFrom(
@@ -168,13 +325,17 @@ class _InputScorePageState extends State<InputScorePage> {
                 value: e.idSiswa,
                 child: CustomTextWidget(
                   text: e.fullName,
-                )
+                ),
+                onTap: () {
+                  setState(() {
+                    studenDropdownValue = e.idSiswa;
+                  });
+                },
               );
-            }).toList(), 
+            }).toList(),
+            value: studenDropdownValue,
             onChange: (String? value) {
-              setState(() {
-                studenDropdownValue = value!;
-              });
+              
             },
           );
         } else if (state is StudentFailed){
@@ -212,6 +373,9 @@ class _InputScorePageState extends State<InputScorePage> {
               setState(() {
                 materiDropdownValue = value!;
               });
+              context.read<GetScoreBloc>().add(
+                FetchScoreEvent(materiDropdownValue!)
+              );
             },
           );
         } else if (state is MateriFailed){
