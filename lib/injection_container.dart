@@ -14,12 +14,18 @@ import 'package:siakad_lpk/features/input_score/data/datasources/input_score_loc
 import 'package:siakad_lpk/features/input_score/data/datasources/input_score_remote_datasource.dart';
 import 'package:siakad_lpk/features/input_score/data/repositories/input_score_repository_impl.dart';
 import 'package:siakad_lpk/features/input_score/domain/repositories/input_score_repository.dart';
+import 'package:siakad_lpk/features/input_score/domain/usecases/delete_nilai_usecase.dart';
+import 'package:siakad_lpk/features/input_score/domain/usecases/edit_nilai_usecase.dart';
 import 'package:siakad_lpk/features/input_score/domain/usecases/get_materi_usecase.dart';
+import 'package:siakad_lpk/features/input_score/domain/usecases/get_nilai_usecase.dart';
 import 'package:siakad_lpk/features/input_score/domain/usecases/get_student_usecase.dart';
 import 'package:siakad_lpk/features/input_score/domain/usecases/post_nilai_usecase.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/delete_score_bloc.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/get_score_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/input_score_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/materi_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/student_bloc.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/update_score_bloc.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_local_datasources.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_remote_datasource.dart';
 import 'package:siakad_lpk/features/login/data/repositories/login_repository_impl.dart';
@@ -159,10 +165,16 @@ Future<void> init() async {
   sl.registerFactory(() => StudentBloc(sl()));
   sl.registerFactory(() => MateriBloc(sl()));
   sl.registerFactory(() => InputScoreBloc(sl()));
+  sl.registerFactory(() => UpdateScoreBloc(sl()));
+  sl.registerFactory(() => DeleteScoreBloc(sl()));
+  sl.registerFactory(() => GetScoreBloc(sl()));
   //usecases
   sl.registerLazySingleton(() => GetStudentUseCase(sl()));
   sl.registerLazySingleton(() => GetMateriUseCase(sl()));
   sl.registerLazySingleton(() => PostNilaiUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteNilaiUseCase(sl()));
+  sl.registerLazySingleton(() => EditNilaiUseCase(sl()));
+  sl.registerLazySingleton(() => GetNilaiUseCase(sl()));
   //repositories
   sl.registerLazySingleton<InputScoreRepository>(
     () => InputScoreRepositoryImpl(sl(), sl(), sl())
