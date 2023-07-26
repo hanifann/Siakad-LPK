@@ -1,14 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:siakad_lpk/features/input_score/domain/entities/materi.dart';
 import 'package:siakad_lpk/features/input_score/domain/entities/student.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/input_score_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/materi_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/student_bloc.dart';
+import 'package:siakad_lpk/features/login/presentation/widgets/column_title_and_textfield_widget.dart';
+import 'package:siakad_lpk/features/login/presentation/widgets/custom_textfield_widget.dart';
 import 'package:siakad_lpk/features/register/presentation/widgets/custom_dropdown_btn_widget.dart';
 import 'package:siakad_lpk/injection_container.dart';
 import 'package:siakad_lpk/themes/colors.dart';
+import 'package:siakad_lpk/widgets/custom_dialog_widget.dart';
 import 'package:siakad_lpk/widgets/text_widget.dart';
 
 class InputScoreView extends StatelessWidget {
@@ -24,6 +31,9 @@ class InputScoreView extends StatelessWidget {
         BlocProvider(
           create: (context) => sl<StudentBloc>()..add(GetStudentEvent()),
         ),
+        BlocProvider(
+          create: (context) => sl<InputScoreBloc>(),
+        ),
       ],
       child: const InputScorePage(),
     );
@@ -38,8 +48,17 @@ class InputScorePage extends StatefulWidget {
 }
 
 class _InputScorePageState extends State<InputScorePage> {
-  late String studenDropdownValue;
-  late String materiDropdownValue;
+  String? studenDropdownValue;
+  String? materiDropdownValue;
+
+  final nilaiEditingController = TextEditingController();
+
+  @override
+  void dispose() {
+    nilaiEditingController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,9 +67,93 @@ class _InputScorePageState extends State<InputScorePage> {
         children: [
           materiBlocBuilderWidget(),
           SizedBox(height: 12.h,),
-          studentBlocBuilderWidget()
+          studentBlocBuilderWidget(),
+          SizedBox(height: 12.h,),
+          inputNilaiBlocListenerWidget()
         ],
       ),
+    );
+  }
+
+  BlocListener<InputScoreBloc, InputScoreState> inputNilaiBlocListenerWidget() {
+    return BlocListener<InputScoreBloc, InputScoreState>(
+      listener: (context, state) {
+        if(state is InputScorSucceed){
+          showDialog(
+            context: context, 
+            builder: (_) {
+              return const CustomDialog(
+                value: 'Berhail menambahkan nilai', 
+                title: 'Berhasil'
+              );
+            }
+          ).then((_) => context.pop());
+        } else if (state is InputScoreFailed){
+          context.pop();
+          showDialog(
+            context: context, 
+            builder: (_) => ErrorDialog(errorValue: state.error.message!)
+          );
+        } else {
+          showDialog(
+            context: context, 
+            builder: (_) => const LoadingDialog()
+          );
+        }
+      },
+      child: textFieldAndBtnRowWidget(),
+    );
+  }
+
+  Row textFieldAndBtnRowWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(
+          width:.65.sw,
+          child: ColumnTitleAndTextFieldWidget(
+            textfield: CustomTextfieldWidget(
+              controller: nilaiEditingController,
+              hint: '',
+            ), 
+            title: 'Input nilai'
+          ),
+        ),
+        SizedBox(
+          height: 50.h,
+          child: ElevatedButton(
+            onPressed: () {
+              if(studenDropdownValue == null || 
+                materiDropdownValue == null || 
+                nilaiEditingController.text.isEmpty){
+                showDialog(
+                  context: context, 
+                  builder: (_) => const ErrorDialog(
+                    errorValue: 'form tidak boleh kosong'
+                  )
+                );
+              } else {
+                context.read<InputScoreBloc>().add(
+                  PostInputScoreEvent(
+                    idSiswa: studenDropdownValue!, 
+                    idMateri: materiDropdownValue!, 
+                    nilai: nilaiEditingController.text
+                  )
+                );
+              }
+            }, 
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kPrimaryColor
+            ),
+            child: CustomTextWidget(
+              text: 'Simpan',
+              size: 14.sp,
+              weight: FontWeight.w500,
+              color: Colors.white,
+            )
+          ),
+        )
+      ],
     );
   }
 
@@ -70,7 +173,7 @@ class _InputScorePageState extends State<InputScorePage> {
             }).toList(), 
             onChange: (String? value) {
               setState(() {
-                materiDropdownValue = value!;
+                studenDropdownValue = value!;
               });
             },
           );
