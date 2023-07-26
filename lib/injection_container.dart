@@ -16,6 +16,8 @@ import 'package:siakad_lpk/features/input_score/data/repositories/input_score_re
 import 'package:siakad_lpk/features/input_score/domain/repositories/input_score_repository.dart';
 import 'package:siakad_lpk/features/input_score/domain/usecases/get_materi_usecase.dart';
 import 'package:siakad_lpk/features/input_score/domain/usecases/get_student_usecase.dart';
+import 'package:siakad_lpk/features/input_score/domain/usecases/post_nilai_usecase.dart';
+import 'package:siakad_lpk/features/input_score/presentation/bloc/input_score_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/materi_bloc.dart';
 import 'package:siakad_lpk/features/input_score/presentation/bloc/student_bloc.dart';
 import 'package:siakad_lpk/features/login/data/datasources/login_local_datasources.dart';
@@ -156,9 +158,11 @@ Future<void> init() async {
   //bloc
   sl.registerFactory(() => StudentBloc(sl()));
   sl.registerFactory(() => MateriBloc(sl()));
+  sl.registerFactory(() => InputScoreBloc(sl()));
   //usecases
   sl.registerLazySingleton(() => GetStudentUseCase(sl()));
   sl.registerLazySingleton(() => GetMateriUseCase(sl()));
+  sl.registerLazySingleton(() => PostNilaiUseCase(sl()));
   //repositories
   sl.registerLazySingleton<InputScoreRepository>(
     () => InputScoreRepositoryImpl(sl(), sl(), sl())
