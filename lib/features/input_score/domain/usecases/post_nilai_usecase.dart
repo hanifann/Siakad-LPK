@@ -2,12 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:siakad_lpk/core/error/failure.dart';
 import 'package:siakad_lpk/core/usecase/usecase.dart';
+import 'package:siakad_lpk/features/input_score/domain/repositories/input_score_repository.dart';
 
 class PostNilaiUseCase extends UseCase<String, NilaiParams> {
+  final InputScoreRepository repository;
+
+  PostNilaiUseCase(this.repository);
+
   @override
-  Future<Either<Failure, String>?> call(params) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Either<Failure, String>?> call(params) async {
+    return repository.postNilai(params.idSiswa, params.idMateri, params.nilai);
   }
   
 }
